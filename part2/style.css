@@ -1,0 +1,25 @@
+/* this is what a comment looks like*/
+
+/* Import google fonts - fonts.google.com*/
+
+@import url('https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Potta+One&display=swap');
+
+/* Update headers */
+
+h2 {
+  font-family: "Potta One";
+  font-size: 40px;
+  color: orange;
+}
+
+h3 {
+  font-family: "Architects Daughter";
+  font-size: 25px;
+  color: teal;
+}
+
+/* Update body text */
+body {
+  font-family: "Potta One";
+  background-color: black;
+}

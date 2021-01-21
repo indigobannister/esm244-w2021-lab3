@@ -1,0 +1,23 @@
+---
+title: 'Part 2: Custom CSS in RMD'
+author: "Indigo Bannister"
+date: "1/20/2021"
+output: 
+  html_document:
+    css: "style.css"
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Level 2 header
+
+
+### Level 3 header
+
+
+#### Level 4 header
+
+Regular Body text.....asdoksdaksdejnksf;kkkkkkkkkkkk
