@@ -1,0 +1,129 @@
+---
+title: "Part 1 - Binary Logistic Regression"
+author: "Indigo Bannister"
+date: "1/20/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# Add packages
+library(tidyverse)
+library(palmerpenguins)
+library(broom)
+library(jtools)
+library(GGally)
+
+```
+
+# Step 1: Exploration of data
+```{r}
+# look at data relationships using ggpairs
+penguins %>% 
+  select(species, bill_length_mm:sex) %>% 
+  ggpairs(aes(color = species))
+
+```
+
+```{r}
+
+# Make subset of data that is just adelie and chinstraps
+adelie_chinstrap <- penguins %>% 
+  filter(species %in% c('Adelie', 'Chinstrap')) %>% 
+  mutate(species = fct_drop(species)) # factor level not auto removed for 'Gentoo', so remove with fct_drop
+
+```
+
+```{r}
+
+# Do a data viz of just the two 
+ggplot(data = adelie_chinstrap, aes(x = body_mass_g, y = flipper_length_mm)) +
+  geom_point(aes(color = sex)) +
+  facet_wrap(~species)
+
+# normally would do more data viz than just this
+
+```
+
+# Step 2: Binary logistic regression (blr)
+
+We will use three variables:
+- body mass
+- flipper length
+- penguin sex
+
+you would normally test more variables
+
+```{r}
+# Run blr
+adelie_chinstrap_blr <- glm(species ~ body_mass_g + flipper_length_mm + sex,
+                            data = adelie_chinstrap,
+                            family = 'binomial')
+
+# take a look at the outcomes
+adelie_chinstrap_blr
+
+summary(adelie_chinstrap_blr)
+
+# interpret results - based upon levels, coded as output will be probability that will be a chinstrap (coded as one, Adelie coded as zero)
+
+
+```
+
+```{r}
+ggplot(data = adelie_chinstrap, aes(x = species, y = flipper_length_mm)) +
+  geom_jitter(aes(color = sex))
+
+```
+
+What are the actual probabilities of being chinstrap for each of the existing observations in our adelie_chinstrap data frame? 
+
+```{r}
+blr_fitted <- adelie_chinstrap_blr %>% 
+  broom::augment(type.predict = 'response') # if leave blank, will report back log odds, not probability
+
+# look at .fitted results
+
+```
+
+```{r}
+# visulaize the results: plot the fitted probabilities
+
+ggplot(data = blr_fitted, aes(x = flipper_length_mm, y = .fitted, color = sex)) +
+  geom_point(aes(pch = species) ) +
+  geom_smooth(aes(color = sex))
+
+```
+
+```{r}
+# plot the model based upon different variables quickly
+effect_plot(adelie_chinstrap_blr,
+            pred = flipper_length_mm,
+            y.label = 'Probability of Chinstrap',
+            interval = TRUE)
+
+effect_plot(adelie_chinstrap_blr,
+            pred = body_mass_g,
+            y.label = 'Probability of Chinstrap',
+            interval = TRUE)
+
+```
+
+```{r}
+
+#Whats the probability that a female penguin weighing 3410g with a flipper length of 192mm is a chinstrap?
+# Use the predict function to make prediction based on model
+
+ex_1 <- predict(adelie_chinstrap_blr,
+                data.frame(sex = 'female',
+                           body_mass_g = 3410,
+                           flipper_length_mm = 192),
+                type = 'response')
+
+ex_1
+
+# There is a 40% chance that this is a chinstrap. 
+
+```
+
